@@ -1,0 +1,10 @@
+services:
+  server:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+      MONGO_URI: mongodb+srv://harshamalvishwajith:200209401591@cluster0.qz6lguv.mongodb.net/userservicedb?retryWrites=true&w=majority
+      PORT: 3001
+    ports:
+      - 3001:3001
