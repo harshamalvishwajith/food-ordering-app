@@ -1,10 +1,12 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const mapService = require("./src/mapService");
+const axios = require("axios");
 
 dotenv.config();
 
 const app = express();
+app.use(express.json());
 const PORT = 3001;
 
 app.get("/route", async (req, res) => {
@@ -52,12 +54,10 @@ app.post("/navigate", async (req, res) => {
     const data = response.data;
 
     if (data.status !== "OK") {
-      return res
-        .status(400)
-        .json({
-          message: "Failed to fetch directions",
-          details: data.error_message,
-        });
+      return res.status(400).json({
+        message: "Failed to fetch directions",
+        details: data.error_message,
+      });
     }
 
     const route = data.routes[0];
