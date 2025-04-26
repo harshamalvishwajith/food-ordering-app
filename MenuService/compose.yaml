@@ -1,0 +1,17 @@
+services:
+  menuservice:
+    build: .
+    container_name: menuservice_container
+    ports:
+      - "5081:5081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDbSettings__ConnectionString=mongodb+srv://harshamalvishwajith:200209401591@cluster0.qz6lguv.mongodb.net/MenuDb?retryWrites=true&w=majority
+      - MongoDbSettings__DatabaseName=MenuDb
+      - ASPNETCORE_URLS=http://+:5081
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
