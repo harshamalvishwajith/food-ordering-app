@@ -1,7 +1,7 @@
 version: "3"
 services:
   delivery-service:
-    build: ./delivery-service
+    build: ./delivery-service-main
     ports:
       - "3000:3000"
     environment:
@@ -13,3 +13,5 @@ services:
       - "3001:3001"
     environment:
       - NODE_ENV=development
+    env_file:
+      - ./map-service/.env
