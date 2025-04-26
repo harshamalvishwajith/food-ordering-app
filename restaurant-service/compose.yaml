@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  restaurant-api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - MONGO_URI=mongodb://mongo:27017/restaurantdb
+      - MONGO_URI_BACKUP=mongodb://mongo_backup:27018/restaurantdb_backup
+    depends_on:
+      - mongo
+      - mongo_backup
+
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  mongo_backup:
+    image: mongo:6.0
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_backup_data:/data/db
+
+volumes:
+  mongo_data:
+  mongo_backup_data:
