@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # compiled output
 /dist
 /node_modules
@@ -54,3 +55,44 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+=======
+# Node.js / Express / Nest.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log* # Added for pnpm
+dist/
+.nest/ # Added for NestJS cache
+*.tsbuildinfo # Added for TypeScript build info
+coverage/ # Added for test coverage reports
+.env
+.env.local
+.env.*.local
+
+# ASP.NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+*.csproj.user
+*.dbmdl
+*.jfm
+*.pfx
+*.publishsettings
+Generated_Code/
+
+# VS Code
+.vscode/
+.history/
+*.code-workspace
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+>>>>>>> 15c533d5f7c44fccd7fb4bebeda6b023121b8632
