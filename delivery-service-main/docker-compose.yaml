@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes # Allow unauthenticated users to connect
+    networks:
+      - kafka-network
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker # Set the process role
+      - KAFKA_CFG_NODE_ID=1 # Unique node ID for KRaft mode
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT # Map listener to security protocol
+    depends_on:
+      - zookeeper
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'kafka-broker-api-versions --bootstrap-server localhost:9092 || exit 1',
+        ]
+      interval: 10s
+      retries: 5
+    networks:
+      - kafka-network
+
+  delivery-service:
+    build: .
+    ports:
+      - '3000:3000'
+    depends_on:
+      kafka:
+        condition: service_healthy # Ensure Kafka is healthy before starting the delivery service
+    environment:
+      - KAFKA_BROKER=kafka:9092 # Kafka broker address
+      - KAFKA_CLIENT_ID=delivery-service # Client ID for Kafka
+      - KAFKA_CONSUMER_GROUP_ID=delivery-consumer # Consumer group ID
+    networks:
+      - kafka-network
+
+networks:
+  kafka-network:
+    driver: bridge

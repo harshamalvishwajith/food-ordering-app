@@ -1,0 +1,15 @@
+version: "3"
+services:
+  delivery-service:
+    build: ./delivery-service
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+
+  map-service:
+    build: ./map-service
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
