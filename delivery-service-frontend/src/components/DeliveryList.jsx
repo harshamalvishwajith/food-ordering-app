@@ -60,13 +60,20 @@ const DeliveryList = () => {
                   <strong>Order ID:</strong> {delivery.orderId}
                 </div>
                 <div>
+                  <strong>Delivery ID:</strong> {delivery.id}
+                </div>
+                <div>
                   <strong>Status:</strong> {delivery.status}
                 </div>
                 <div>
-                  <strong>Pickup Location : </strong> {delivery.pickupLocation}
+                  <strong>Pickup Location : </strong> {delivery.pickupLocation}{" "}
+                  {delivery.pickupCoordinates &&
+                    `(${delivery.pickupCoordinates.latitude}, ${delivery.pickupCoordinates.longitude})`}
                 </div>
                 <div>
-                  <strong>Dropoff Location :</strong> {delivery.dropoffLocation}
+                  <strong>Dropoff Location :</strong> {delivery.dropoffLocation}{" "}
+                  {delivery.dropoffCoordinates &&
+                    `(${delivery.dropoffCoordinates.latitude}, ${delivery.dropoffCoordinates.longitude})`}
                 </div>
                 <div>
                   <strong>Created At:</strong>{" "}
