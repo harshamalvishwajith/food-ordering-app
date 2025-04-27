@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  payment-service:
+    build: .
+    ports:
+      - '5081:5081'
+    env_file:
+      - .env
