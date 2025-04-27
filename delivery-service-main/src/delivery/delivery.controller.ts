@@ -23,6 +23,10 @@ export class DeliveryController {
   findOne(@Param('id') id: string): Delivery {
     return this.deliveryService.findOne(id);
   }
+  @Patch(':id/accept')
+  async acceptDelivery(@Param('id') id: string): Promise<Delivery> {
+    return this.deliveryService.acceptDelivery(id);
+  }
 
   @Patch(':id/status')
   updateStatus(

@@ -1,6 +1,8 @@
 import "./App.css";
 import RouteMap from "../components/RouteMap";
 import RouteInfo from "../components/RouteInfo";
+import OrderForm from "../components/OrderForm";
+import DeliveryList from "../components/DeliveryList";
 
 // TODO: Replace with actual polyline string from the API not calling because i want to use kafka
 // if not kafka need to call navigate api in map service at port 3001
@@ -27,6 +29,18 @@ const mockRouteData = {
 function App() {
   return (
     <div>
+      <div>
+        <h1 className="text-2xl font-bold mb-4">
+          Add this to the order placing from the resturant
+        </h1>
+        <OrderForm />
+      </div>
+      <div>
+        <h1 className="text-2xl font-bold mb-4">
+          Show this to the delivery person
+        </h1>
+        <DeliveryList />
+      </div>
       <div>
         <h1 className="text-2xl font-bold mb-4">Route Information</h1>
         <RouteInfo routeData={mockRouteData} />

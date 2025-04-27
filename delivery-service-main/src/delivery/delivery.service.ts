@@ -46,6 +46,18 @@ export class DeliveryService {
     delivery.updatedAt = new Date();
     return delivery;
   }
+  acceptDelivery(id: string): Delivery {
+    const delivery = this.findOne(id);
+    if (!delivery) {
+      throw new Error('Delivery not found');
+    }
+    if (delivery.status !== DeliveryStatus.PENDING) {
+      throw new Error('Delivery is not in a state to be accepted');
+    }
+    delivery.status = DeliveryStatus.ASSIGNED;
+    delivery.updatedAt = new Date();
+    return delivery;
+  }
 
   findNearbyDrivers(id: string, maxDistance: number): Driver[] {
     const delivery = this.findOne(id);
