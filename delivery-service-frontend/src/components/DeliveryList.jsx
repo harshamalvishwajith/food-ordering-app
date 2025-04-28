@@ -8,11 +8,14 @@ const DeliveryList = () => {
   useEffect(() => {
     const fetchDeliveries = async () => {
       try {
-        const response = await fetch("http://localhost:3000/deliveries"); // Adjust the URL as needed
+        setLoading(true); // Start loading
+        const response = await fetch("http://localhost:3000/deliveries"); // Adjust URL if needed
         const data = await response.json();
         setDeliveries(data);
       } catch (error) {
         console.error("Error fetching deliveries:", error);
+      } finally {
+        setLoading(false); // Always stop loading
       }
     };
 
@@ -60,13 +63,20 @@ const DeliveryList = () => {
                   <strong>Order ID:</strong> {delivery.orderId}
                 </div>
                 <div>
+                  <strong>Delivery ID:</strong> {delivery.id}
+                </div>
+                <div>
                   <strong>Status:</strong> {delivery.status}
                 </div>
                 <div>
-                  <strong>Pickup Location : </strong> {delivery.pickupLocation}
+                  <strong>Pickup Location : </strong> {delivery.pickupLocation}{" "}
+                  {delivery.pickupCoordinates &&
+                    `(${delivery.pickupCoordinates.latitude}, ${delivery.pickupCoordinates.longitude})`}
                 </div>
                 <div>
-                  <strong>Dropoff Location :</strong> {delivery.dropoffLocation}
+                  <strong>Dropoff Location :</strong> {delivery.dropoffLocation}{" "}
+                  {delivery.dropoffCoordinates &&
+                    `(${delivery.dropoffCoordinates.latitude}, ${delivery.dropoffCoordinates.longitude})`}
                 </div>
                 <div>
                   <strong>Created At:</strong>{" "}

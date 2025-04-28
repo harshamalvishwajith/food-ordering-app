@@ -55,6 +55,8 @@ services:
     environment:
       - NODE_ENV=development
       - KAFKA_BROKER=kafka:9092
+    env_file:
+      - ./delivery-service-main/.env
     depends_on:
       - kafka
 

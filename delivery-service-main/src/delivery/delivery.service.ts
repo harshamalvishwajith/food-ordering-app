@@ -5,18 +5,34 @@ import { DriverStatus } from '../drivers/entities/driver.entity';
 import { CreateDeliveryDto } from './dto/create-delivery.dto';
 import { UpdateDeliveryStatusDto } from './dto/update-delivery-status.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateLocationDto } from './dto/create-location.dto';
 
 @Injectable()
 export class DeliveryService {
   private deliveries: Delivery[] = [];
   private drivers: Driver[] = [];
 
-  create(createDeliveryDto: CreateDeliveryDto): Delivery {
+  async create(createDeliveryDto: CreateDeliveryDto): Promise<Delivery> {
+    // Geocode the dropoff location using OpenCage API
+
+    const pickupCoordinates = await this.fetchLocation(
+      createDeliveryDto.pickupLocation,
+    );
+    const dropoffCoordinates = await this.fetchLocation(
+      createDeliveryDto.dropoffLocation,
+    );
+    console.log('Pickup Coordinates:', Promise.resolve(pickupCoordinates));
+    console.log('Dropoff Coordinates:', dropoffCoordinates);
+    if (!pickupCoordinates || !dropoffCoordinates) {
+      throw new Error('Invalid pickup or dropoff location');
+    }
     const newDelivery: Delivery = {
       id: uuidv4(),
       orderId: createDeliveryDto.orderId,
       pickupLocation: createDeliveryDto.pickupLocation,
       dropoffLocation: createDeliveryDto.dropoffLocation,
+      pickupCoordinates: pickupCoordinates,
+      dropoffCoordinates: dropoffCoordinates,
       status: DeliveryStatus.PENDING,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -100,6 +116,37 @@ export class DeliveryService {
 
   degreesToRadians(degrees: number): number {
     return (degrees * Math.PI) / 180;
+  }
+
+  async fetchLocation(location: string): Promise<CreateLocationDto> {
+    const apiKey = process.env.GEO_LOCATION_API_KEY; // Replace with your OpenCage API key
+    if (!apiKey) {
+      console.error('OpenCage API key is not set');
+      return { latitude: 0, longitude: 0, address: '' };
+    }
+    try {
+      const geocodeResponse = await fetch(
+        `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+          location,
+        )}&key=${apiKey}`,
+      );
+      const geocodeData = await geocodeResponse.json();
+
+      if (geocodeData.results.length === 0) {
+        console.error('No location found for the address');
+        return { latitude: 0, longitude: 0, address: '' };
+      }
+
+      const { lat, lng } = geocodeData.results[0].geometry;
+      return {
+        latitude: lat,
+        longitude: lng,
+        address: geocodeData.results[0].formatted,
+      };
+    } catch (error) {
+      console.error('Error fetching geocode data:', error);
+      return { latitude: 0, longitude: 0, address: '' };
+    }
   }
 }
 

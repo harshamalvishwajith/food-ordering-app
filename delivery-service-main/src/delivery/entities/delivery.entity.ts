@@ -1,3 +1,5 @@
+import { CreateLocationDto } from '../dto/create-location.dto';
+
 export enum DeliveryStatus {
   PENDING = 'PENDING',
   ASSIGNED = 'ASSIGNED',
@@ -12,6 +14,8 @@ export class Delivery {
   riderId?: string;
   pickupLocation: string;
   dropoffLocation: string;
+  pickupCoordinates: CreateLocationDto;
+  dropoffCoordinates: CreateLocationDto;
   status: DeliveryStatus;
   createdAt: Date;
   updatedAt: Date;

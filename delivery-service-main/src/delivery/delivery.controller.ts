@@ -10,8 +10,10 @@ export class DeliveryController {
   constructor(private readonly deliveryService: DeliveryService) {}
 
   @Post()
-  create(@Body() createDeliveryDto: CreateDeliveryDto): Delivery {
-    return this.deliveryService.create(createDeliveryDto);
+  async create(
+    @Body() createDeliveryDto: CreateDeliveryDto,
+  ): Promise<Delivery> {
+    return await this.deliveryService.create(createDeliveryDto);
   }
 
   @Get()
