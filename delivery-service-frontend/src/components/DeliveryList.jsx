@@ -8,11 +8,14 @@ const DeliveryList = () => {
   useEffect(() => {
     const fetchDeliveries = async () => {
       try {
-        const response = await fetch("http://localhost:3000/deliveries"); // Adjust the URL as needed
+        setLoading(true); // Start loading
+        const response = await fetch("http://localhost:3000/deliveries"); // Adjust URL if needed
         const data = await response.json();
         setDeliveries(data);
       } catch (error) {
         console.error("Error fetching deliveries:", error);
+      } finally {
+        setLoading(false); // Always stop loading
       }
     };
 
