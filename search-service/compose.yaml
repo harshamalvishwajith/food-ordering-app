@@ -1,0 +1,18 @@
+services:
+  search-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: search-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - '9200:9200'
+
+  search-service:
+    build: .
+    ports:
+      - '3008:3000'
+    environment:
+      - ELASTICSEARCH_NODE=http://search-elasticsearch:9200
+    depends_on:
+      - search-elasticsearch

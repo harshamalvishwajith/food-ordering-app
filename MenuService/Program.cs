@@ -1,6 +1,13 @@
-﻿using MenuService.Models;
+﻿using MenuService.Kafka;
+using MenuService.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var kafkaBootstrapServers = Environment.GetEnvironmentVariable("KAFKA_BROKER") ?? "localhost:9092";
+var kafkaTopic = Environment.GetEnvironmentVariable("KAFKA_TOPIC") ?? "menu-events";
+
+builder.Services.AddSingleton(new KafkaProducer(kafkaBootstrapServers, kafkaTopic));
+
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {

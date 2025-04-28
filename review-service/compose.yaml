@@ -1,0 +1,9 @@
+services:
+  server:
+    build:
+      context: .
+    environment:
+      MONGO_URI: mongodb+srv://harshamalvishwajith:200209401591@cluster0.qz6lguv.mongodb.net/reviewservicedb?retryWrites=true&w=majority
+      PORT: 3009
+    ports:
+      - 3009:3009

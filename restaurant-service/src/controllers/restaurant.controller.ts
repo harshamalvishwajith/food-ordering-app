@@ -6,6 +6,7 @@ export const createRestaurant = async (req: Request, res: Response) => {
     const restaurant = new Restaurant(req.body);
     await restaurant.save();
     res.status(201).json(restaurant);
+    return restaurant;
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -28,12 +29,20 @@ export const updateRestaurant = async (req: Request, res: Response) => {
     req.body,
     { new: true }
   );
-  if (restaurant) res.json(restaurant);
-  else res.status(404).json({ message: "Not found" });
+  if (restaurant) {
+    res.json(restaurant);
+    return restaurant;
+  } else {
+    res.status(404).json({ message: "Not found" });
+  }
 };
 
 export const deleteRestaurant = async (req: Request, res: Response) => {
   const restaurant = await Restaurant.findByIdAndDelete(req.params.id);
-  if (restaurant) res.json({ message: "Deleted" });
-  else res.status(404).json({ message: "Not found" });
+  if (restaurant) {
+    res.json({ message: "Deleted" });
+    return restaurant;
+  } else {
+    res.status(404).json({ message: "Not found" });
+  }
 };

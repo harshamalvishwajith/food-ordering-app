@@ -1,0 +1,18 @@
+services:
+  notification-service:
+    container_name: notification-service
+    build: .
+    ports:
+      - '3002:3000'
+    environment:
+      - KAFKA_BROKER=kafka:9092
+      - MONGO_URI=mongodb+srv://harshamalvishwajith:200209401591@cluster0.qz6lguv.mongodb.net/notificationservicedb?retryWrites=true&w=majority
+      - RESEND_API_KEY=re_fQxpLi7B_HGdFPMYPLaShz2GfkfKHt3GK
+      - FCM_SERVER_KEY=BLNtoHGQplUp_ll3AK31WxmQDxWE5V2825ffDO_n11rr8QLUM2EaT21kjwFN3xnA7EMLmsgN5AiJNZkT1JpthRQ
+    networks:
+      - kafka
+
+networks:
+  kafka:
+    external: true
+    name: kafka_default

@@ -9,9 +9,14 @@ services:
       - MongoDbSettings__ConnectionString=mongodb+srv://harshamalvishwajith:200209401591@cluster0.qz6lguv.mongodb.net/MenuDb?retryWrites=true&w=majority
       - MongoDbSettings__DatabaseName=MenuDb
       - ASPNETCORE_URLS=http://+:5081
+      - KAFKA_BROKER=kafka:9092
+      - KAFKA_TOPIC=menu-events
     networks:
       - backend
+      - kafka_default
 
 networks:
   backend:
     driver: bridge
+  kafka_default:
+    external: true
