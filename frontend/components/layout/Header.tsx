@@ -1,59 +1,61 @@
 "use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Menu, X, ShoppingBag, User, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/theme-toggle';
-import { cn } from '@/lib/utils';
+import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Menu, X, ShoppingBag, User, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { cn } from "@/lib/utils";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  
+
   // Demo only - replace with actual auth state
   const isAuthenticated = false;
-  const userRole = 'customer';
-  
+  const userRole = "customer";
+
   const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Restaurants', href: '/restaurants' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { name: "Home", href: "/" },
+    { name: "Restaurants", href: "/restaurants" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
   ];
 
   // Role-specific links
   const roleLinks = {
     customer: [
-      { name: 'My Orders', href: '/customer/orders' },
-      { name: 'Favorites', href: '/customer/favorites' },
-      { name: 'Profile', href: '/customer/profile' },
+      { name: "My Orders", href: "/customer/orders" },
+      { name: "Favorites", href: "/customer/favorites" },
+      { name: "Profile", href: "/customer/profile" },
     ],
     restaurant: [
-      { name: 'Dashboard', href: '/restaurant/dashboard' },
-      { name: 'Menu', href: '/restaurant/menu' },
-      { name: 'Orders', href: '/restaurant/orders' },
+      { name: "Dashboard", href: "/restaurant/dashboard" },
+      { name: "Menu", href: "/restaurant/menu" },
+      { name: "Orders", href: "/restaurant/orders" },
     ],
     delivery: [
-      { name: 'Active Deliveries', href: '/delivery/active' },
-      { name: 'Earnings', href: '/delivery/earnings' },
+      { name: "Active Deliveries", href: "/delivery/active" },
+      { name: "Earnings", href: "/delivery/earnings" },
     ],
     admin: [
-      { name: 'Dashboard', href: '/admin/dashboard' },
-      { name: 'Users', href: '/admin/users' },
-      { name: 'Restaurants', href: '/admin/restaurants' },
+      { name: "Dashboard", href: "/admin/dashboard" },
+      { name: "Users", href: "/admin/users" },
+      { name: "Restaurants", href: "/admin/restaurants" },
     ],
   };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container max-w-6xl mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-2xl bg-gradient-to-r from-red-500 to-orange-500 text-transparent bg-clip-text">FoodHub</span>
+            <span className="font-bold text-2xl bg-gradient-to-r from-red-500 to-orange-500 text-transparent bg-clip-text">
+              FoodHub
+            </span>
           </Link>
-          
+
           <nav className="hidden md:flex gap-6">
             {navLinks.map((link) => (
               <Link
@@ -71,10 +73,10 @@ const Header = () => {
             ))}
           </nav>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          
+
           {isAuthenticated ? (
             <>
               <Link href="/cart">
@@ -85,7 +87,7 @@ const Header = () => {
                   </span>
                 </Button>
               </Link>
-              
+
               <div className="relative hidden md:block">
                 <Button
                   variant="ghost"
@@ -95,12 +97,14 @@ const Header = () => {
                   <User className="h-5 w-5" />
                   <span>Account</span>
                 </Button>
-                
+
                 {isMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-card shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div className="py-1 border-b px-4 py-2">
+                    <div className="border-b px-4 py-2">
                       <p className="text-sm font-medium">John Doe</p>
-                      <p className="text-xs text-muted-foreground">john@example.com</p>
+                      <p className="text-xs text-muted-foreground">
+                        john@example.com
+                      </p>
                     </div>
                     <div className="py-1">
                       {roleLinks[userRole].map((link) => (
@@ -133,7 +137,7 @@ const Header = () => {
               </Link>
             </div>
           )}
-          
+
           <button
             className="block md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -146,7 +150,7 @@ const Header = () => {
           </button>
         </div>
       </div>
-      
+
       {/* Mobile menu */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 bg-background pt-16 md:hidden">
@@ -161,11 +165,13 @@ const Header = () => {
                 {link.name}
               </Link>
             ))}
-            
+
             {isAuthenticated && (
               <>
                 <div className="py-2 mt-4">
-                  <h3 className="font-semibold text-muted-foreground mb-2">Account</h3>
+                  <h3 className="font-semibold text-muted-foreground mb-2">
+                    Account
+                  </h3>
                   {roleLinks[userRole].map((link) => (
                     <Link
                       key={link.href}

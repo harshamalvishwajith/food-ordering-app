@@ -1,24 +1,32 @@
-import React from 'react';
-import { restaurants, categories } from '@/lib/data';
-import RestaurantCard from '@/components/restaurant/RestaurantCard';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import SearchBar from '@/components/SearchBar';
-import { Slider } from '@/components/ui/slider';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { MapPin, Clock, Star, Filter } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetDescription, SheetHeader, SheetFooter } from '@/components/ui/sheet';
+import React from "react";
+import { restaurants, categories } from "@/lib/data";
+import RestaurantCard from "@/components/restaurant/RestaurantCard";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SearchBar from "@/components/SearchBar";
+import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { MapPin, Clock, Star, Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetTitle,
+  SheetDescription,
+  SheetHeader,
+  SheetFooter,
+} from "@/components/ui/sheet";
 
 export default function RestaurantsPage() {
   return (
-    <div className="container max-w-6xl py-12">
+    <div className="container max-w-6xl py-12 mx-auto">
       <h1 className="text-3xl font-bold mb-8">Restaurants Near You</h1>
-      
+
       <div className="mb-8">
         <SearchBar />
       </div>
-      
+
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters - Desktop */}
         <div className="w-full lg:w-1/4 space-y-6 hidden lg:block">
@@ -38,7 +46,7 @@ export default function RestaurantsPage() {
               ))}
             </div>
           </div>
-          
+
           <div className="bg-card p-6 rounded-lg border">
             <h3 className="font-semibold mb-4">Price Range</h3>
             <Slider defaultValue={[50]} max={100} step={1} className="my-6" />
@@ -49,74 +57,56 @@ export default function RestaurantsPage() {
               <span>$$$$</span>
             </div>
           </div>
-          
+
           <div className="bg-card p-6 rounded-lg border">
             <h3 className="font-semibold mb-4">Delivery Time</h3>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox id="time-15" />
-                <Label
-                  htmlFor="time-15"
-                  className="text-sm cursor-pointer"
-                >
+                <Label htmlFor="time-15" className="text-sm cursor-pointer">
                   Under 15 min
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="time-30" />
-                <Label
-                  htmlFor="time-30"
-                  className="text-sm cursor-pointer"
-                >
+                <Label htmlFor="time-30" className="text-sm cursor-pointer">
                   Under 30 min
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="time-45" />
-                <Label
-                  htmlFor="time-45"
-                  className="text-sm cursor-pointer"
-                >
+                <Label htmlFor="time-45" className="text-sm cursor-pointer">
                   Under 45 min
                 </Label>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-card p-6 rounded-lg border">
             <h3 className="font-semibold mb-4">Dietary</h3>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox id="vegetarian" />
-                <Label
-                  htmlFor="vegetarian"
-                  className="text-sm cursor-pointer"
-                >
+                <Label htmlFor="vegetarian" className="text-sm cursor-pointer">
                   Vegetarian
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="vegan" />
-                <Label
-                  htmlFor="vegan"
-                  className="text-sm cursor-pointer"
-                >
+                <Label htmlFor="vegan" className="text-sm cursor-pointer">
                   Vegan
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="gluten-free" />
-                <Label
-                  htmlFor="gluten-free"
-                  className="text-sm cursor-pointer"
-                >
+                <Label htmlFor="gluten-free" className="text-sm cursor-pointer">
                   Gluten Free
                 </Label>
               </div>
             </div>
           </div>
         </div>
-        
+
         {/* Mobile Filters */}
         <div className="lg:hidden mb-4">
           <Sheet>
@@ -133,13 +123,16 @@ export default function RestaurantsPage() {
                   Refine your restaurant search
                 </SheetDescription>
               </SheetHeader>
-              
+
               <div className="space-y-6 py-4">
                 <div>
                   <h3 className="font-semibold mb-4">Categories</h3>
                   <div className="space-y-2">
                     {categories.map((category) => (
-                      <div key={category.id} className="flex items-center space-x-2">
+                      <div
+                        key={category.id}
+                        className="flex items-center space-x-2"
+                      >
                         <Checkbox id={`mobile-category-${category.id}`} />
                         <Label
                           htmlFor={`mobile-category-${category.id}`}
@@ -151,10 +144,15 @@ export default function RestaurantsPage() {
                     ))}
                   </div>
                 </div>
-                
+
                 <div>
                   <h3 className="font-semibold mb-4">Price Range</h3>
-                  <Slider defaultValue={[50]} max={100} step={1} className="my-6" />
+                  <Slider
+                    defaultValue={[50]}
+                    max={100}
+                    step={1}
+                    className="my-6"
+                  />
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>$</span>
                     <span>$$</span>
@@ -162,7 +160,7 @@ export default function RestaurantsPage() {
                     <span>$$$$</span>
                   </div>
                 </div>
-                
+
                 <div>
                   <h3 className="font-semibold mb-4">Delivery Time</h3>
                   <div className="space-y-2">
@@ -195,7 +193,7 @@ export default function RestaurantsPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div>
                   <h3 className="font-semibold mb-4">Dietary</h3>
                   <div className="space-y-2">
@@ -229,14 +227,14 @@ export default function RestaurantsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <SheetFooter>
                 <Button className="w-full">Apply Filters</Button>
               </SheetFooter>
             </SheetContent>
           </Sheet>
         </div>
-        
+
         {/* Restaurant List */}
         <div className="w-full lg:w-3/4">
           <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between mb-6">
@@ -247,7 +245,7 @@ export default function RestaurantsPage() {
                 <TabsTrigger value="pickup">Pickup</TabsTrigger>
               </TabsList>
             </Tabs>
-            
+
             <div className="flex gap-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="sm" className="h-8 gap-1 text-xs">
@@ -269,7 +267,7 @@ export default function RestaurantsPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
             {restaurants.map((restaurant) => (
               <RestaurantCard key={restaurant.id} restaurant={restaurant} />
