@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   restaurant-api:
     build: .
@@ -7,26 +5,13 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
-      - MONGO_URI=mongodb://mongo:27017/restaurantdb
-      - MONGO_URI_BACKUP=mongodb://mongo_backup:27018/restaurantdb_backup
-    depends_on:
-      - mongo
-      - mongo_backup
+      - MONGO_URI=mongodb+srv://harshamalvishwajith:200209401591@cluster0.qz6lguv.mongodb.net/restaurantdb?retryWrites=true&w=majority
+      - MONGO_URI_BACKUP=mongodb+srv://harshamalvishwajith:200209401591@cluster0.qz6lguv.mongodb.net/restaurantdb_backup?retryWrites=true&w=majority
+      - KAFKA_BROKER=kafka:9092
+    networks:
+      - kafka_network
 
-  mongo:
-    image: mongo:6.0
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-
-  mongo_backup:
-    image: mongo:6.0
-    ports:
-      - "27018:27017"
-    volumes:
-      - mongo_backup_data:/data/db
-
-volumes:
-  mongo_data:
-  mongo_backup_data:
+networks:
+  kafka_network:
+    external: true
+    name: kafka_default

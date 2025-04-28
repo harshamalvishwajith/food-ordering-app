@@ -6,5 +6,12 @@ services:
       NODE_ENV: production
       MONGO_URI: mongodb+srv://harshamalvishwajith:200209401591@cluster0.qz6lguv.mongodb.net/orderservicedb?retryWrites=true&w=majority
       PORT: 5000
+      KAFKA_BROKER: kafka:9092
     ports:
       - 5000:5000
+    networks:
+      - kafka_default
+
+networks:
+  kafka_default:
+    external: true
