@@ -4,7 +4,7 @@ export interface Admin {
   username: string;
   password: string;
   email: string;
-  role: 'admin' | 'superadmin';
+  role: "admin" | "superadmin";
 }
 
 export interface User {
@@ -12,7 +12,7 @@ export interface User {
   email: string;
   passwordHash: string;
   phone?: string;
-  role: 'customer' | 'restaurant' | 'delivery';
+  role: "customer" | "restaurant" | "delivery";
   addresses?: any[];
   favorites?: string[];
   orderHistory?: string[];
@@ -71,4 +71,27 @@ export interface Category {
   id: string;
   name: string;
   image: string;
+}
+
+export enum DeliveryStatus {
+  PENDING = "PENDING",
+  ASSIGNED = "ASSIGNED",
+  PICKED_UP = "PICKED_UP",
+  DELIVERED = "DELIVERED",
+  CANCELLED = "CANCELLED",
+}
+
+export interface DeliveryItem {
+  id: string;
+  orderId: string;
+  riderId: string;
+  pickupLocation: string;
+  dropoffLocation: string;
+  customerName: string;
+  status: DeliveryStatus;
+  createdAt: string;
+  items: { name: string; quantity: number; price: string }[];
+  totalAmount: string;
+  pickupCoords?: [number, number];
+  dropoffCoords?: [number, number];
 }

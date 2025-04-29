@@ -1,39 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Navigation, Phone, Clock, DollarSign } from "lucide-react";
+import { DeliveryItem, DeliveryStatus } from "@/types/schema";
+import dynamic from "next/dynamic";
+import { useToast } from "@/hooks/use-toast";
+
+// Dynamically import the Map component to avoid SSR issues with Leaflet
+const DeliveryMap = dynamic(() => import("@/components/delivery/DeliveryMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full w-full bg-muted animate-pulse rounded-lg" />
+  ),
+});
 
 // Mock data for active deliveries
-const activeDeliveries = [
+const activeDeliveries: DeliveryItem[] = [
   {
     id: "1",
-    restaurant: "Burger King",
-    customer: "John Doe",
-    address: "123 Main St, New York",
-    items: ["Classic Burger", "Fries"],
-    status: "picking_up",
-    earnings: 8.5,
-    estimatedTime: "20 min",
-    phone: "+1 (555) 000-0000",
+    orderId: "ORD-001",
+    riderId: "RIDER-001",
+    pickupLocation: "Burger King, 123 Main St, New York",
+    dropoffLocation: "456 Park Ave, New York",
+    customerName: "John Doe",
+    status: DeliveryStatus.PENDING,
+    createdAt: new Date().toISOString(),
+    items: [
+      { name: "Classic Burger", quantity: 1, price: "$8.99" },
+      { name: "Fries", quantity: 1, price: "$3.99" },
+    ],
+    totalAmount: "$12.98",
+    pickupCoords: [40.7128, -74.006],
+    dropoffCoords: [40.758, -73.9855],
   },
   {
     id: "2",
-    restaurant: "Pizza Palace",
-    customer: "Jane Smith",
-    address: "456 Oak St, New York",
-    items: ["Pepperoni Pizza", "Garlic Bread"],
-    status: "delivering",
-    earnings: 10.25,
-    estimatedTime: "15 min",
-    phone: "+1 (555) 111-1111",
+    orderId: "ORD-002",
+    riderId: "RIDER-001",
+    pickupLocation: "Pizza Palace, 789 Broadway, New York",
+    dropoffLocation: "321 Madison Ave, New York",
+    customerName: "Jane Smith",
+    status: DeliveryStatus.ASSIGNED,
+    createdAt: new Date().toISOString(),
+    items: [
+      { name: "Pepperoni Pizza", quantity: 1, price: "$15.99" },
+      { name: "Garlic Knots", quantity: 1, price: "$4.99" },
+    ],
+    totalAmount: "$20.98",
+    pickupCoords: [40.7589, -73.9851],
+    dropoffCoords: [40.7549, -73.984],
   },
 ];
 
 export default function ActiveDeliveriesPage() {
-  const [selectedDelivery, setSelectedDelivery] = useState(activeDeliveries[0]);
+  const [selectedDelivery, setSelectedDelivery] = useState<DeliveryItem>(
+    activeDeliveries[0]
+  );
+  const [showMap, setShowMap] = useState(false);
+  const { toast } = useToast();
+
+  const handleStatusUpdate = (newStatus: DeliveryStatus) => {
+    // In a real application, this would make an API call
+    toast({
+      title: "Status Updated",
+      description: `Delivery status changed to ${newStatus}`,
+    });
+  };
+
+  const getStatusBadgeColor = (status: DeliveryStatus) => {
+    switch (status) {
+      case DeliveryStatus.PENDING:
+        return "bg-yellow-500";
+      case DeliveryStatus.ASSIGNED:
+        return "bg-blue-500";
+      case DeliveryStatus.PICKED_UP:
+        return "bg-orange-500";
+      case DeliveryStatus.DELIVERED:
+        return "bg-green-500";
+      case DeliveryStatus.CANCELLED:
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
 
   return (
     <div className="container max-w-6xl py-12 mx-auto">
@@ -55,40 +107,37 @@ export default function ActiveDeliveriesPage() {
               className={`cursor-pointer hover:shadow-md transition-shadow ${
                 selectedDelivery.id === delivery.id ? "border-primary" : ""
               }`}
-              onClick={() => setSelectedDelivery(delivery)}
+              onClick={() => {
+                setSelectedDelivery(delivery);
+                setShowMap(false);
+              }}
             >
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="font-semibold">{delivery.restaurant}</h3>
+                    <h3 className="font-semibold">{`Order #${delivery.orderId}`}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {delivery.customer}
+                      {delivery.customerName}
                     </p>
                   </div>
-                  <Badge
-                    className={
-                      delivery.status === "picking_up"
-                        ? "bg-blue-500"
-                        : "bg-orange-500"
-                    }
-                  >
-                    {delivery.status === "picking_up"
-                      ? "Picking Up"
-                      : "Delivering"}
+                  <Badge className={getStatusBadgeColor(delivery.status)}>
+                    {delivery.status}
                   </Badge>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span>{delivery.address}</span>
+                    <span className="line-clamp-1">
+                      {delivery.dropoffLocation}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span>{delivery.estimatedTime}</span>
+                    <span>Estimated: 30 min</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <span>${delivery.earnings.toFixed(2)}</span>
+                    <span>{delivery.totalAmount}</span>
                   </div>
                 </div>
               </CardContent>
@@ -98,89 +147,149 @@ export default function ActiveDeliveriesPage() {
 
         <div className="lg:col-span-2">
           <Card className="h-full">
-            <CardHeader>
-              <CardTitle>Delivery Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="font-semibold mb-2">Restaurant</h3>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-medium">
-                            {selectedDelivery.restaurant}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            123 Restaurant St
-                          </p>
-                        </div>
-                        <Button variant="outline" size="sm">
-                          <Navigation className="h-4 w-4 mr-2" />
-                          Navigate
+            {!showMap ? (
+              <>
+                <CardHeader>
+                  <CardTitle>Delivery Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-semibold mb-2">Pickup Location</h3>
+                      <Card>
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-medium">Restaurant</p>
+                              <p className="text-sm text-muted-foreground">
+                                {selectedDelivery.pickupLocation}
+                              </p>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setShowMap(true)}
+                            >
+                              <Navigation className="h-4 w-4 mr-2" />
+                              Navigate
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold mb-2">Drop-off Location</h3>
+                      <Card>
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-medium">
+                                {selectedDelivery.customerName}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {selectedDelivery.dropoffLocation}
+                              </p>
+                            </div>
+                            <Button variant="outline" size="sm">
+                              <Phone className="h-4 w-4 mr-2" />
+                              Call
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold mb-2">Order Details</h3>
+                      <Card>
+                        <CardContent className="p-4">
+                          <ul className="space-y-2">
+                            {selectedDelivery.items.map((item, index) => (
+                              <li
+                                key={index}
+                                className="flex items-center justify-between"
+                              >
+                                <div className="flex items-center">
+                                  <span className="h-2 w-2 bg-primary rounded-full mr-2" />
+                                  <span>{item.name}</span>
+                                  <span className="text-muted-foreground ml-2">
+                                    x{item.quantity}
+                                  </span>
+                                </div>
+                                <span>{item.price}</span>
+                              </li>
+                            ))}
+                            <li className="pt-2 border-t mt-2">
+                              <div className="flex justify-between font-medium">
+                                <span>Total</span>
+                                <span>{selectedDelivery.totalAmount}</span>
+                              </div>
+                            </li>
+                          </ul>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <div className="flex gap-4">
+                      {selectedDelivery.status === DeliveryStatus.PENDING && (
+                        <Button
+                          className="flex-1"
+                          onClick={() =>
+                            handleStatusUpdate(DeliveryStatus.ASSIGNED)
+                          }
+                        >
+                          Accept Delivery
                         </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div>
-                  <h3 className="font-semibold mb-2">Customer</h3>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-medium">
-                            {selectedDelivery.customer}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {selectedDelivery.address}
-                          </p>
-                        </div>
-                        <div className="space-x-2">
-                          <Button variant="outline" size="sm">
-                            <Navigation className="h-4 w-4 mr-2" />
-                            Navigate
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Phone className="h-4 w-4 mr-2" />
-                            Call
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div>
-                  <h3 className="font-semibold mb-2">Order Details</h3>
-                  <Card>
-                    <CardContent className="p-4">
-                      <ul className="space-y-2">
-                        {selectedDelivery.items.map((item, index) => (
-                          <li key={index} className="flex items-center">
-                            <span className="h-2 w-2 bg-primary rounded-full mr-2" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div className="flex gap-4">
-                  {selectedDelivery.status === "picking_up" ? (
-                    <Button className="flex-1">Mark as Picked Up</Button>
-                  ) : (
-                    <Button className="flex-1">Complete Delivery</Button>
-                  )}
-                  <Button variant="outline" className="flex-1">
-                    Report Issue
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
+                      )}
+                      {selectedDelivery.status === DeliveryStatus.ASSIGNED && (
+                        <Button
+                          className="flex-1"
+                          onClick={() =>
+                            handleStatusUpdate(DeliveryStatus.PICKED_UP)
+                          }
+                        >
+                          Mark as Picked Up
+                        </Button>
+                      )}
+                      {selectedDelivery.status === DeliveryStatus.PICKED_UP && (
+                        <Button
+                          className="flex-1"
+                          onClick={() =>
+                            handleStatusUpdate(DeliveryStatus.DELIVERED)
+                          }
+                        >
+                          Complete Delivery
+                        </Button>
+                      )}
+                      <Button variant="outline" className="flex-1">
+                        Report Issue
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </>
+            ) : (
+              <>
+                <CardHeader className="border-b">
+                  <div className="flex justify-between items-center">
+                    <CardTitle>Navigation</CardTitle>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowMap(false)}
+                    >
+                      Back to Details
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="h-[600px]">
+                    <DeliveryMap delivery={selectedDelivery} />
+                  </div>
+                </CardContent>
+              </>
+            )}
           </Card>
         </div>
       </div>
