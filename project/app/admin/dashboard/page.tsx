@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import {
   LineChart,
   Line,
@@ -16,33 +16,33 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
-} from 'recharts';
-import { Users, DollarSign, Store, TrendingUp } from 'lucide-react';
+  Cell,
+} from "recharts";
+import { Users, DollarSign, Store, TrendingUp } from "lucide-react";
 
 // Mock data for charts
 const revenueData = [
-  { name: 'Jan', value: 4000 },
-  { name: 'Feb', value: 3000 },
-  { name: 'Mar', value: 5000 },
-  { name: 'Apr', value: 2780 },
-  { name: 'May', value: 1890 },
-  { name: 'Jun', value: 6390 },
+  { name: "Jan", value: 4000 },
+  { name: "Feb", value: 3000 },
+  { name: "Mar", value: 5000 },
+  { name: "Apr", value: 2780 },
+  { name: "May", value: 1890 },
+  { name: "Jun", value: 6390 },
 ];
 
 const ordersByCategory = [
-  { name: 'Pizza', value: 35 },
-  { name: 'Burgers', value: 25 },
-  { name: 'Sushi', value: 20 },
-  { name: 'Mexican', value: 15 },
-  { name: 'Desserts', value: 5 },
+  { name: "Pizza", value: 35 },
+  { name: "Burgers", value: 25 },
+  { name: "Sushi", value: 20 },
+  { name: "Mexican", value: 15 },
+  { name: "Desserts", value: 5 },
 ];
 
-const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD'];
+const COLORS = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEEAD"];
 
 export default function AdminDashboard() {
   return (
-    <div className="container max-w-6xl py-12">
+    <div className="container max-w-6xl py-12 mx-auto">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <Button>Generate Report</Button>
@@ -140,10 +140,10 @@ export default function AdminDashboard() {
                       <XAxis dataKey="name" />
                       <YAxis />
                       <Tooltip />
-                      <Line 
-                        type="monotone" 
-                        dataKey="value" 
-                        stroke="hsl(var(--primary))" 
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke="hsl(var(--primary))"
                         strokeWidth={2}
                       />
                     </LineChart>
@@ -170,9 +170,9 @@ export default function AdminDashboard() {
                         dataKey="value"
                       >
                         {ordersByCategory.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={COLORS[index % COLORS.length]} 
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
                           />
                         ))}
                       </Pie>
@@ -182,10 +182,15 @@ export default function AdminDashboard() {
                 </div>
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   {ordersByCategory.map((category, index) => (
-                    <div key={category.name} className="flex items-center gap-2">
-                      <div 
+                    <div
+                      key={category.name}
+                      className="flex items-center gap-2"
+                    >
+                      <div
                         className="h-3 w-3 rounded-full"
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                        style={{
+                          backgroundColor: COLORS[index % COLORS.length],
+                        }}
                       />
                       <span className="text-sm">{category.name}</span>
                     </div>
@@ -201,9 +206,7 @@ export default function AdminDashboard() {
             <CardHeader>
               <CardTitle>User Management</CardTitle>
             </CardHeader>
-            <CardContent>
-              {/* User management content */}
-            </CardContent>
+            <CardContent>{/* User management content */}</CardContent>
           </Card>
         </TabsContent>
 
@@ -212,9 +215,7 @@ export default function AdminDashboard() {
             <CardHeader>
               <CardTitle>Restaurant Management</CardTitle>
             </CardHeader>
-            <CardContent>
-              {/* Restaurant management content */}
-            </CardContent>
+            <CardContent>{/* Restaurant management content */}</CardContent>
           </Card>
         </TabsContent>
 
@@ -223,9 +224,7 @@ export default function AdminDashboard() {
             <CardHeader>
               <CardTitle>Order Management</CardTitle>
             </CardHeader>
-            <CardContent>
-              {/* Order management content */}
-            </CardContent>
+            <CardContent>{/* Order management content */}</CardContent>
           </Card>
         </TabsContent>
       </Tabs>
