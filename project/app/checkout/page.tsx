@@ -146,7 +146,7 @@ export default function CheckoutPage() {
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>$27.98</span>
+                  <span>$42.97</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Delivery Fee</span>
@@ -154,12 +154,12 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Tax</span>
-                  <span>$2.80</span>
+                  <span>$4.30</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
-                  <span>$33.77</span>
+                  <span>$50.26</span>
                 </div>
               </div>
             </CardContent>
