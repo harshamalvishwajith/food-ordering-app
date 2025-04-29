@@ -18,6 +18,10 @@ export class UserController {
   create(@Body() userData: Partial<User>) {
     return this.userService.create(userData);
   }
+  @Post('login')
+  getLogged(@Body() userData: Partial<User>) {
+    return this.userService.getLogged(userData);
+  }
 
   @Get()
   findAll() {

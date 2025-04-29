@@ -31,7 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z
+  passwordHash: z
     .string()
     .min(6, { message: "Password must be at least 6 characters" }),
 });
@@ -43,24 +43,43 @@ export default function LoginPage() {
     "customer" | "restaurant" | "delivery"
   >("customer");
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
-      password: "",
+      passwordHash: "",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    setIsLoading(true);
     try {
-      // Simulate API call
-      console.log("Login attempt", { ...values, userType });
+      const response = await fetch(`http://localhost:3001/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...values,
+          userType,
+        }),
+      });
 
-      // Mock successful login
+      if (!response.ok) {
+        throw new Error("Invalid credentials");
+      }
+
+      // Optionally, get token or user data
+      // const data = await response.json();
+
       toast({
         title: "Login successful",
         description: `Welcome back to FoodHub!`,
       });
+
+      console.log("Login successful", response.json());
 
       // Redirect based on user type
       switch (userType) {
@@ -74,12 +93,15 @@ export default function LoginPage() {
           router.push("/delivery/active");
           break;
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Login failed",
-        description: "Please check your credentials and try again.",
+        description:
+          error.message || "Please check your credentials and try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -131,7 +153,7 @@ export default function LoginPage() {
 
               <FormField
                 control={form.control}
-                name="password"
+                name="passwordHash"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
