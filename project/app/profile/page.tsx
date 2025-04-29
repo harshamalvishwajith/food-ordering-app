@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { User, Settings, CreditCard, MapPin, Clock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 
 export default function ProfilePage() {
   const { toast } = useToast();
