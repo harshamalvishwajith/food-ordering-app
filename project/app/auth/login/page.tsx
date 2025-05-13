@@ -84,7 +84,7 @@ export default function LoginPage() {
       // Redirect based on user type
       switch (userType) {
         case "customer":
-          router.push("/");
+          router.push("/profile");
           break;
         case "restaurant":
           router.push("/restaurant/dashboard");

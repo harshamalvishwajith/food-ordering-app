@@ -27,7 +27,7 @@ async function getMenuItems(restaurantId: string): Promise<MenuItem[]> {
       id: "1",
       name: "Classic Burger",
       description: "Beef patty with lettuce, tomato, and special sauce",
-      price: 12.99,
+      price: 400.0,
       category: "Burgers",
       image:
         "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg",
@@ -36,7 +36,7 @@ async function getMenuItems(restaurantId: string): Promise<MenuItem[]> {
       id: "2",
       name: "Cheese Pizza",
       description: "Mozzarella cheese, tomato sauce, fresh basil",
-      price: 14.99,
+      price: 1200.0,
       category: "Pizza",
       image:
         "https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg",

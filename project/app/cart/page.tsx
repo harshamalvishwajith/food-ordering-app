@@ -12,7 +12,7 @@ const initialCart = [
   {
     id: "1",
     name: "Classic Burger",
-    price: 12.99,
+    price: 400.0,
     quantity: 1,
     restaurant: "Burger King",
     image: "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg",
@@ -20,9 +20,9 @@ const initialCart = [
   {
     id: "2",
     name: "Cheese Pizza",
-    price: 14.99,
+    price: 1200.0,
     quantity: 2,
-    restaurant: "Pizza Palace",
+    restaurant: "Burger King",
     image: "https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg",
   },
 ];
@@ -55,8 +55,8 @@ export default function CartPage() {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const deliveryFee = 2.99;
-  const tax = subtotal * 0.1; // 10% tax
+  const deliveryFee = 120.0;
+  const tax = subtotal * 0.05; // 10% tax
   const total = subtotal + deliveryFee + tax;
 
   return (
@@ -121,10 +121,10 @@ export default function CartPage() {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        LKR-{(item.price * item.quantity).toFixed(2)}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        ${item.price.toFixed(2)} each
+                        LKR-{item.price.toFixed(2)} each
                       </p>
                     </div>
                   </div>
@@ -140,20 +140,20 @@ export default function CartPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>LKR-{subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Delivery Fee</span>
-                    <span>${deliveryFee.toFixed(2)}</span>
+                    <span>LKR-{deliveryFee.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Tax</span>
-                    <span>${tax.toFixed(2)}</span>
+                    <span>LKR-{tax.toFixed(2)}</span>
                   </div>
                   <Separator className="my-4" />
                   <div className="flex justify-between font-semibold">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>LKR-{total.toFixed(2)}</span>
                   </div>
                 </div>
               </CardContent>

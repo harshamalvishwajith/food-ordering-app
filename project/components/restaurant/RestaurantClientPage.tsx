@@ -94,7 +94,7 @@ export default function RestaurantClientPage({
                   </div>
                   <div className="flex items-center justify-between mt-4">
                     <span className="font-semibold">
-                      ${item.price.toFixed(2)}
+                      LKR {item.price.toFixed(2)}
                     </span>
                     <div className="flex items-center gap-2">
                       <Button

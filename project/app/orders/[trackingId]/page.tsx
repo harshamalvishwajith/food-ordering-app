@@ -9,31 +9,31 @@ const orderDetails = {
   id: "ORD-001",
   trackingId: "TRK-001",
   restaurantName: "Burger King",
-  restaurantAddress: "123 Restaurant St, New York",
-  restaurantPhone: "+1 (555) 123-4567",
-  customerName: "John Doe",
-  deliveryAddress: "456 Customer Ave, New York",
+  restaurantAddress: "123/2 Kandy Road, Pilimathalawa",
+  restaurantPhone: "+94(777) 123-4567",
+  customerName: "Kanchana Wimalasena",
+  deliveryAddress: "111/A/9 Araliya Uyana Angunawala,Peradeniya",
   customerPhone: "+1 (555) 987-6543",
   status: "In Progress", // This might need adjustment based on DeliveryStatus enum if used directly
   estimatedDelivery: "30-40 min",
   items: [
-    { name: "Classic Burger", quantity: 1, price: "$8.99" },
-    { name: "Fries", quantity: 1, price: "$3.99" },
+    { name: "Classic Burger", quantity: 1, price: "LKR 400.00" },
+    { name: "Cheese Pizza", quantity: 2, price: "LKR 2400.00" },
   ],
-  total: "$12.98",
+  total: "LKR 2800.00",
   rider: {
-    name: "Mike Wilson",
-    phone: "+1 (555) 234-5678",
+    name: "Mahesh Perera",
+    phone: "+94 (777) 234-5678",
     photo: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg",
   },
-  pickupCoords: [40.7128, -74.006] as [number, number],
-  dropoffCoords: [40.758, -73.9855] as [number, number],
+  pickupCoords: [7.2663, 80.5522] as [number, number],
+  dropoffCoords: [7.2699, 80.5938] as [number, number],
 };
 
 const deliverySteps = [
   { status: "Order Confirmed", completed: true, time: "3:30 PM" },
   { status: "Preparing Order", completed: true, time: "3:35 PM" },
-  { status: "Rider Assigned", completed: true, time: "3:45 PM" },
+  { status: "Rider Assigned", completed: false },
   { status: "Order Picked Up", completed: false },
   { status: "Delivered", completed: false },
 ];
