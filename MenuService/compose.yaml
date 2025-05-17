@@ -8,7 +8,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - MongoDbSettings__ConnectionString=mongodb+srv://harshamalvishwajith:200209401591@cluster0.qz6lguv.mongodb.net/MenuDb?retryWrites=true&w=majority
       - MongoDbSettings__DatabaseName=MenuDb
-      - ASPNETCORE_URLS=http://+:5081
+      - ASPNETCORE_URLS=http://+:7046
       - KAFKA_BROKER=kafka:9092
       - KAFKA_TOPIC=menu-events
     networks:
