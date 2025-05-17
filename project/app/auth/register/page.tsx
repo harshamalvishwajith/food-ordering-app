@@ -98,7 +98,7 @@ export default function RegisterPage() {
       const payload = { ...values, userType };
 
       // Send the request to the backend (replace the URL with your actual backend endpoint)
-      const response = await fetch(`http://localhost:3001/users`, {
+      const response = await fetch(`http://localhost:3009/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

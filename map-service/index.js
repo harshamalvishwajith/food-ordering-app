@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-const PORT = 3001;
+const PORT = 3002;
 
 app.get("/route", async (req, res) => {
   const { startLat, startLng, endLat, endLng } = req.query;
