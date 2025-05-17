@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,17 +11,94 @@ import { User, Settings, CreditCard, MapPin, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/context/AuthContext";
+import { useForm } from "react-hook-form";
+import { useForm as useAddressForm } from "react-hook-form";
+import { editUser } from "@/utils/authHelpers";
 export default function ProfilePage() {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useAuth();
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
 
-  const handleSave = () => {
-    setIsEditing(false);
-    toast({
-      title: "Profile updated",
-      description: "Your changes have been saved successfully.",
+  // Setup react-hook-form with default values from user
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      firstName: user?.name?.split(" ")[0] || "",
+      lastName: user?.name?.split(" ")[1] || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+    },
+  });
+  // Address form
+  const {
+    register: registerAddress,
+    handleSubmit: handleAddressSubmit,
+    reset: resetAddress,
+  } = useAddressForm({
+    defaultValues: {
+      address: user?.address || "",
+    },
+  });
+
+  // Reset form when user changes (important for context updates)
+  useEffect(() => {
+    reset({
+      firstName: user?.name?.split(" ")[0] || "",
+      lastName: user?.name?.split(" ")[1] || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
     });
+  }, [user, reset]);
+
+  const onSubmit = (data: any) => {
+    setIsEditing(false);
+
+    const updatedUser = {
+      ...user,
+      name: `${data.firstName} ${data.lastName}`,
+      email: data.email,
+      phone: data.phone,
+    };
+
+    editUser(user._id, updatedUser)
+      .then(() => {
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        toast({
+          title: "Profile updated",
+          description: "Your changes have been saved successfully.",
+        });
+      })
+      .catch((error) => {
+        console.error("Error updating profile:", error);
+        toast({
+          title: "Error",
+          description: "Failed to update profile. Please try again.",
+          variant: "destructive",
+        });
+      });
+  };
+
+  useEffect(() => {
+    resetAddress({ address: user?.address || "" });
+  }, [user, resetAddress]);
+
+  const onAddressSubmit = async (data: any) => {
+    setIsEditingAddress(false);
+    const updatedUser = { ...user, address: data.address };
+    try {
+      await editUser(user._id, updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      toast({
+        title: "Address updated",
+        description: "Your address has been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update address.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -64,55 +141,53 @@ export default function ProfilePage() {
               </Button>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="firstName">First Name</Label>
+                      <Input
+                        id="firstName"
+                        {...register("firstName")}
+                        disabled={!isEditing}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <Input
+                        id="lastName"
+                        {...register("lastName")}
+                        disabled={!isEditing}
+                      />
+                    </div>
+                  </div>
                   <div>
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="email">Email</Label>
                     <Input
-                      id="firstName"
-                      defaultValue={
-                        user?.name ? user.name.split(" ")[0] : "User First Name"
-                      }
+                      id="email"
+                      type="email"
+                      {...register("email")}
                       disabled={!isEditing}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="phone">Phone Number</Label>
                     <Input
-                      id="lastName"
-                      defaultValue={
-                        user?.name ? user.name.split(" ")[1] : "User Last Name"
-                      }
+                      id="phone"
+                      {...register("phone")}
                       disabled={!isEditing}
                     />
                   </div>
+                  {isEditing && (
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                    >
+                      Save Changes
+                    </Button>
+                  )}
                 </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    defaultValue={user?.email || "user@mail.com"}
-                    disabled={!isEditing}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    defaultValue={user?.phone || "+94 123 456 789"}
-                    disabled={!isEditing}
-                  />
-                </div>
-                {isEditing && (
-                  <Button
-                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
-                    onClick={handleSave}
-                  >
-                    Save Changes
-                  </Button>
-                )}
-              </div>
+              </form>
             </CardContent>
           </Card>
         </TabsContent>
@@ -158,21 +233,51 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Sample address - replace with actual data */}
                 <div className="border rounded-lg p-4">
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="font-semibold">Home</h3>
-                      <p className="text-sm text-muted-foreground">
-                        123 Main St, Apt 4B
-                        <br />
-                        123/3 Colombo rd,Kurunageala ,Sri Lanka
-                      </p>
+                      {isEditingAddress ? (
+                        <form
+                          onSubmit={handleAddressSubmit(onAddressSubmit)}
+                          className="flex gap-2"
+                        >
+                          <Input
+                            {...registerAddress("address")}
+                            defaultValue={user?.address || ""}
+                            className="w-64"
+                          />
+                          <Button type="submit" size="sm">
+                            Save
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setIsEditingAddress(false);
+                              resetAddress({ address: user?.address || "" });
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </form>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          {user?.address || "No address provided"}
+                        </p>
+                      )}
                     </div>
                     <div className="space-x-2">
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
+                      {!isEditingAddress && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setIsEditingAddress(true)}
+                        >
+                          Edit
+                        </Button>
+                      )}
                       <Button variant="outline" size="sm">
                         Delete
                       </Button>

@@ -35,6 +35,7 @@ export class UserController {
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateData: Partial<User>) {
+    console.log('updateData', updateData);
     return this.userService.update(id, updateData);
   }
 
