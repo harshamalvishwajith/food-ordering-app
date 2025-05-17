@@ -96,7 +96,7 @@ export default function RestaurantDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Revenue</p>
-                <h3 className="text-2xl font-bold mt-1">$4,290</h3>
+                <h3 className="text-2xl font-bold mt-1">LKR 525,290</h3>
               </div>
               <div className="h-12 w-12 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
                 <DollarSign className="h-6 w-6 text-green-500" />

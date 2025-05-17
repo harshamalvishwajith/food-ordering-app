@@ -54,11 +54,11 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" placeholder="John" />
+                    <Input id="firstName" placeholder="Saman" />
                   </div>
                   <div>
                     <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" placeholder="Doe" />
+                    <Input id="lastName" placeholder="Silva" />
                   </div>
                 </div>
                 <div>
@@ -68,16 +68,16 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="city">City</Label>
-                    <Input id="city" placeholder="New York" />
+                    <Input id="city" placeholder="Kandy" />
                   </div>
                   <div>
                     <Label htmlFor="zipCode">ZIP Code</Label>
-                    <Input id="zipCode" placeholder="10001" />
+                    <Input id="zipCode" placeholder="20400" />
                   </div>
                 </div>
                 <div>
                   <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" placeholder="+1 (555) 000-0000" />
+                  <Input id="phone" placeholder="+94 (777) 000-0000" />
                 </div>
               </div>
             </CardContent>
@@ -146,20 +146,20 @@ export default function CheckoutPage() {
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>$42.97</span>
+                  <span>LKR 2800.00</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Delivery Fee</span>
-                  <span>$2.99</span>
+                  <span>LKR 120.00</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Tax</span>
-                  <span>$4.30</span>
+                  <span>LKR 140.00</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
-                  <span>$50.26</span>
+                  <span>LKR 3060.00</span>
                 </div>
               </div>
             </CardContent>

@@ -69,7 +69,7 @@ export default function ProfilePage() {
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
                       id="firstName"
-                      defaultValue="John"
+                      defaultValue="Ishara"
                       disabled={!isEditing}
                     />
                   </div>
@@ -77,7 +77,7 @@ export default function ProfilePage() {
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       id="lastName"
-                      defaultValue="Doe"
+                      defaultValue="Sandanayake"
                       disabled={!isEditing}
                     />
                   </div>
@@ -87,7 +87,7 @@ export default function ProfilePage() {
                   <Input
                     id="email"
                     type="email"
-                    defaultValue="john@example.com"
+                    defaultValue="isara@gmail.com"
                     disabled={!isEditing}
                   />
                 </div>
@@ -95,7 +95,7 @@ export default function ProfilePage() {
                   <Label htmlFor="phone">Phone Number</Label>
                   <Input
                     id="phone"
-                    defaultValue="+1 (555) 000-0000"
+                    defaultValue="+94 77 123 4567"
                     disabled={!isEditing}
                   />
                 </div>
@@ -133,7 +133,7 @@ export default function ProfilePage() {
                   <div className="space-y-2">
                     <p>Burger King - 2 items</p>
                     <p className="text-sm text-muted-foreground">
-                      Total: $25.98
+                      Total: LKR 3200.00
                     </p>
                   </div>
                   <Button variant="outline" className="mt-4">
@@ -161,7 +161,7 @@ export default function ProfilePage() {
                       <p className="text-sm text-muted-foreground">
                         123 Main St, Apt 4B
                         <br />
-                        New York, NY 10001
+                        123/3 Colombo rd,Kurunageala ,Sri Lanka
                       </p>
                     </div>
                     <div className="space-x-2">

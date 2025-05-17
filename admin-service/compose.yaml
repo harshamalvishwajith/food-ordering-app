@@ -6,4 +6,4 @@ services:
       MONGO_URI: mongodb+srv://harshamalvishwajith:200209401591@cluster0.qz6lguv.mongodb.net/adminservicedb?retryWrites=true&w=majority
       PORT: 3010
     ports:
-      - 3010:3010
+      - 3001:3010
