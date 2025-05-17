@@ -8,12 +8,6 @@ var kafkaTopic = Environment.GetEnvironmentVariable("KAFKA_TOPIC") ?? "menu-even
 
 builder.Services.AddSingleton(new KafkaProducer(kafkaBootstrapServers, kafkaTopic));
 
-
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ListenAnyIP(5081); // <-- Force Kestrel to use port 5081
-});
-
 // Load MongoDB settings from appsettings.json
 builder.Services.Configure<DatabaseSettings>(
     builder.Configuration.GetSection("DatabaseSettings"));

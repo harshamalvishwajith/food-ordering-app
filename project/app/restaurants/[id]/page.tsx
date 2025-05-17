@@ -1,66 +1,111 @@
-import { restaurants } from "@/lib/data";
 import RestaurantClientPage from "@/components/restaurant/RestaurantClientPage";
+import { notFound } from "next/navigation"; // Import notFound
+import { Restaurant, MenuItem } from "@/types/schema"; // Import Restaurant and MenuItem types
+
+// Fetch menu items from the MenuService API
+async function getMenuItems(restaurantId: string): Promise<MenuItem[]> {
+  try {
+    console.log(
+      `[getMenuItems] Fetching menu for restaurantId: ${restaurantId}`
+    ); // Added log
+    const response = await fetch(`https://localhost:7046/api/Menu`);
+    if (!response.ok) {
+      console.error(
+        `[getMenuItems] API request failed: ${response.status} ${response.statusText}`
+      ); // Added log
+      throw new Error(
+        `Failed to fetch menu items: ${response.status} ${response.statusText}`
+      );
+    }
+    const allItems: any[] = await response.json();
+    console.log(
+      "[getMenuItems] All items fetched from API:",
+      JSON.stringify(allItems, null, 2)
+    ); // Added log for all items
+
+    // Filter items for the specific restaurant and map to the frontend MenuItem interface
+    const restaurantItems = allItems
+      .filter((item) => {
+        const match = item.restaurantId === restaurantId;
+        // console.log(`[getMenuItems] Filtering item: ID=${item.id}, item.restaurantId=${item.restaurantId}, match=${match}`); // Optional detailed log for each item
+        return match;
+      })
+      .map((item) => ({
+        id: item.id, // Assuming backend Id is serialized as id
+        restaurantId: item.restaurantId,
+        name: item.name,
+        description: item.description, // Ensure backend provides this or handle if optional
+        price: item.price,
+        category: item.category, // Ensure backend provides this or handle if optional
+        isAvailable: item.isAvailable,
+        image: item.image, // Ensure backend provides this or handle if optional
+      }));
+
+    console.log(
+      // This log was already present, good for final count
+      `[getMenuItems] Fetched ${restaurantItems.length} menu items for restaurant ${restaurantId}`
+    );
+    console.log(
+      "[getMenuItems] Filtered restaurant items:",
+      JSON.stringify(restaurantItems, null, 2)
+    ); // Added log for filtered items
+    return restaurantItems;
+  } catch (error) {
+    console.error("Error fetching menu items:", error);
+    return []; // Return empty array or handle error as appropriate
+  }
+}
+
+// Function to fetch a single restaurant by ID
+async function getRestaurant(id: string): Promise<Restaurant | null> {
+  try {
+    const response = await fetch(`http://localhost:3006/api/restaurants/${id}`);
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null; // Restaurant not found
+      }
+      throw new Error(
+        `Failed to fetch restaurant: ${response.status} ${response.statusText}`
+      );
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching restaurant ${id}:`, error);
+    return null; // Return null or handle error as appropriate
+  }
+}
 
 export async function generateStaticParams() {
-  return restaurants.map((restaurant) => ({
-    id: restaurant.id,
-  }));
-}
-
-// Define a type for menu items if not already defined globally
-interface MenuItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-}
-
-// Fetch or define menu items for the restaurant (replace with actual data fetching)
-async function getMenuItems(restaurantId: string): Promise<MenuItem[]> {
-  // Simulate fetching menu items based on restaurant ID
-  // In a real app, you would fetch this from your backend/API
-  console.log(`Fetching menu items for restaurant ${restaurantId}`); // Added log
-  return [
-    {
-      id: "1",
-      name: "Classic Burger",
-      description: "Beef patty with lettuce, tomato, and special sauce",
-      price: 400.0,
-      category: "Burgers",
-      image:
-        "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg",
-    },
-    {
-      id: "2",
-      name: "Cheese Pizza",
-      description: "Mozzarella cheese, tomato sauce, fresh basil",
-      price: 1200.0,
-      category: "Pizza",
-      image:
-        "https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg",
-    },
-    // Add more menu items as needed based on the restaurant ID
-  ];
+  try {
+    const response = await fetch(`http://localhost:3006/api/restaurants`);
+    if (!response.ok) {
+      console.error(
+        "Failed to fetch restaurants for generateStaticParams:",
+        response.status,
+        response.statusText
+      );
+      return []; // Return empty array on error to prevent build failure, or handle differently
+    }
+    const allRestaurants: Restaurant[] = await response.json();
+    return allRestaurants.map((restaurant) => ({
+      id: restaurant._id,
+    }));
+  } catch (error) {
+    console.error("Error in generateStaticParams:", error);
+    return [];
+  }
 }
 
 export default async function RestaurantPage({
   params,
 }: {
-  params: { id: string };
+  readonly params: { id: string }; // Added readonly
 }) {
-  const restaurant = restaurants.find((r) => r.id === params.id);
+  const restaurant = await getRestaurant(params.id);
 
-  if (!restaurant) {
-    // Optionally, you could return a 404 page here using notFound() from next/navigation
-    return (
-      <div className="container max-w-6xl py-12">Restaurant not found</div>
-    );
+  if (!restaurant?._id) {
+    notFound(); // Use notFound() for a cleaner 404 handling
   }
 
-  // Fetch menu items for the specific restaurant
-  const menuItems = await getMenuItems(restaurant.id);
-
-  return <RestaurantClientPage restaurant={restaurant} menuItems={menuItems} />;
+  return <RestaurantClientPage restaurant={restaurant} />;
 }

@@ -1,9 +1,9 @@
-import React from 'react';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Clock, Star, MapPin } from 'lucide-react';
-import Link from 'next/link';
-import { Restaurant } from '@/types/schema';
+import React from "react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Clock, Star, MapPin } from "lucide-react";
+import Link from "next/link";
+import { Restaurant } from "@/types/schema";
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
@@ -11,7 +11,7 @@ interface RestaurantCardProps {
 
 const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
   return (
-    <Link href={`/restaurants/${restaurant.id}`}>
+    <Link href={`/restaurants/${restaurant._id}`}>
       <Card className="overflow-hidden hover:shadow-md transition-shadow group h-full flex flex-col">
         <div className="relative h-48 overflow-hidden">
           <img
@@ -20,9 +20,13 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
           {restaurant.isOpen ? (
-            <Badge className="absolute top-2 right-2 bg-green-500 hover:bg-green-600">Open</Badge>
+            <Badge className="absolute top-2 right-2 bg-green-500 hover:bg-green-600">
+              Open
+            </Badge>
           ) : (
-            <Badge className="absolute top-2 right-2 bg-red-500 hover:bg-red-600">Closed</Badge>
+            <Badge className="absolute top-2 right-2 bg-red-500 hover:bg-red-600">
+              Closed
+            </Badge>
           )}
           {restaurant.freeDelivery && (
             <Badge className="absolute top-2 left-2 bg-orange-500 hover:bg-orange-600">
@@ -38,7 +42,9 @@ const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
               <span className="text-sm font-medium">{restaurant.rating}</span>
             </div>
           </div>
-          <p className="text-muted-foreground text-sm mb-2">{restaurant.cuisine}</p>
+          <p className="text-muted-foreground text-sm mb-2">
+            {restaurant.cuisine}
+          </p>
           <div className="flex items-center text-sm text-muted-foreground">
             <MapPin className="h-3 w-3 mr-1" />
             <span>{restaurant.location}</span>

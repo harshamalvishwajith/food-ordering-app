@@ -24,7 +24,7 @@ export interface User {
 }
 
 export interface Restaurant {
-  id: string;
+  _id?: string;
   name: string;
   cuisine?: string;
   location?: string;
@@ -37,7 +37,7 @@ export interface Restaurant {
 }
 
 export interface MenuItem {
-  id: string | null;
+  id: string;
   restaurantId: string;
   name: string;
   description: string;

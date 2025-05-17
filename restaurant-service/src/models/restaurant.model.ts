@@ -6,6 +6,10 @@ export interface IRestaurant extends Document {
   location?: string;
   phone?: string;
   isOpen: boolean;
+  rating?: number;
+  deliveryTime?: number;
+  image?: string;
+  freeDelivery?: boolean;
 }
 
 const RestaurantSchema = new Schema<IRestaurant>(
@@ -15,6 +19,10 @@ const RestaurantSchema = new Schema<IRestaurant>(
     location: { type: String },
     phone: { type: String },
     isOpen: { type: Boolean, default: true },
+    rating: { type: Number, default: 0 },
+    deliveryTime: { type: Number, default: 0 },
+    image: { type: String },
+    freeDelivery: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
