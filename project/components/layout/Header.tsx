@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ShoppingBag, User, LogOut } from "lucide-react";
@@ -8,12 +8,26 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import { set } from "date-fns";
+import { useAuth } from "@/context/AuthContext";
+import { UserType } from "@/utils/authHelpers";
+import { log } from "console";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const pathname = usePathname();
-  const userRole = "restaurant"; // This should be dynamically set based on the logged-in user
+  let userRole = "customer"; // Default role, can be set based on user data
+
+  const { user, logout } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      setIsAuthenticated(false);
+      return;
+    }
+    userRole = user.role; // Assuming user object has a userType property
+    setIsAuthenticated(true);
+  }, [user]);
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -27,7 +41,7 @@ const Header = () => {
     customer: [
       { name: "My Orders", href: "/customer/orders" },
       { name: "Favorites", href: "/customer/favorites" },
-      { name: "Profile", href: "/customer/profile" },
+      { name: "Profile", href: "/profile" },
     ],
     restaurant: [
       { name: "Dashboard", href: "/restaurant/dashboard" },
@@ -44,6 +58,15 @@ const Header = () => {
       { name: "Restaurants", href: "/admin/restaurants" },
     ],
   };
+
+  function submitLogout(): void {
+    console.log("Logout btn clicked");
+    logout();
+    setIsMenuOpen(false);
+    if (!user) {
+      setIsAuthenticated(false);
+    }
+  }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -100,9 +123,9 @@ const Header = () => {
                 {isMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-card shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="py-1 border-b px-4 py-2">
-                      <p className="text-sm font-medium">John Doe</p>
+                      <p className="text-sm font-medium">{user?.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        john@example.com
+                        {user?.email}
                       </p>
                     </div>
                     <div className="py-1">
@@ -117,7 +140,10 @@ const Header = () => {
                       ))}
                     </div>
                     <div className="py-1 border-t">
-                      <button className="flex w-full items-center px-4 py-2 text-sm text-red-500 hover:bg-accent">
+                      <button
+                        className="flex w-full items-center px-4 py-2 text-sm text-red-500 hover:bg-accent"
+                        onClick={() => submitLogout()}
+                      >
                         <LogOut className="mr-2 h-4 w-4" />
                         Sign out
                       </button>
@@ -184,7 +210,7 @@ const Header = () => {
                 </div>
                 <button
                   className="flex items-center text-red-500 py-2 mt-4"
-                  onClick={() => setIsAuthenticated(false)}
+                  onClick={() => submitLogout()}
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign out

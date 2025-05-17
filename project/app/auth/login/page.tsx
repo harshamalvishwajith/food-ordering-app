@@ -28,6 +28,8 @@ import {
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
+import { UserType } from "@/utils/authHelpers";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -39,11 +41,9 @@ const loginSchema = z.object({
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [userType, setUserType] = useState<
-    "customer" | "restaurant" | "delivery"
-  >("customer");
-
+  const [userType, setUserType] = useState<UserType>("customer");
   const [isLoading, setIsLoading] = useState(false);
+  const { login, isAuthenticated } = useAuth();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -56,30 +56,32 @@ export default function LoginPage() {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3009/users/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...values,
-          userType,
-        }),
-      });
+      // const response = await fetch(`http://localhost:3009/users/login`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     ...values,
+      //     userType,
+      //   }),
+      // });
 
-      if (!response.ok) {
-        throw new Error("Invalid credentials");
-      }
+      // if (!response.ok) {
+      //   throw new Error("Invalid credentials");
+      // }
+      login(values.email, values.passwordHash, userType);
 
       // Optionally, get token or user data
       // const data = await response.json();
+      if (isAuthenticated) {
+        toast({
+          title: "Login successful",
+          description: `Welcome back to FoodHub!`,
+        });
+      }
 
-      toast({
-        title: "Login successful",
-        description: `Welcome back to FoodHub!`,
-      });
-
-      console.log("Login successful", response.json());
+      // console.log("Login successful", response.json());
 
       // Redirect based on user type
       switch (userType) {

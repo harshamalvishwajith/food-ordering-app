@@ -21,18 +21,21 @@ export class UserService {
   }
 
   async getLogged(userData: Partial<User>): Promise<User> {
-    const user = await this.userModel
-      .findOne({
-        email: userData.email,
-        passwordHash: userData.passwordHash,
-      })
-      .exec();
+    console.log('get logged funtion is called userData', userData);
+    const user = await this.userModel.findOne({
+      email: userData.email,
+      passwordHash: userData.passwordHash,
+      userType: userData.role,
+    });
     if (!user) throw new NotFoundException('User not found');
     // const isMatch = await bcrypt.compare(
     //   userData.passwordHash,
     //   user.passwordHash,
     // );
     // if (!isMatch) throw new NotFoundException('Invalid credentials');
+    if (user) {
+      console.log('user found', user);
+    }
     return user;
   }
 
