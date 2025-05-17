@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Phone, Star, Plus, Minus } from "lucide-react";
 import { Restaurant, MenuItem } from "@/types/schema";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 interface RestaurantClientPageProps {
   restaurant: Restaurant;
@@ -19,6 +20,9 @@ export default function RestaurantClientPage({
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [isLoadingMenu, setIsLoadingMenu] = useState(true);
   const [errorMenu, setErrorMenu] = useState<string | null>(null);
+  const [isAddingToCart, setIsAddingToCart] = useState(false); // State for add to cart loading
+  const [addToCartError, setAddToCartError] = useState<string | null>(null); // State for add to cart error
+  const router = useRouter(); // Initialize useRouter
 
   useEffect(() => {
     if (!restaurant?._id) {
@@ -93,10 +97,98 @@ export default function RestaurantClientPage({
       console.warn("updateQuantity called with null itemId");
       return;
     }
-    setQuantities((prev) => ({
-      ...prev,
-      [itemId]: Math.max(0, (prev[itemId] || 0) + delta),
-    }));
+    setQuantities((prev) => {
+      const currentQuantity = prev[itemId] || 0;
+      const newQuantity = Math.max(0, currentQuantity + delta);
+      // If quantity becomes 0, remove it from the state to keep it clean
+      if (newQuantity === 0) {
+        const { [itemId]: _, ...rest } = prev;
+        return rest;
+      }
+      return {
+        ...prev,
+        [itemId]: newQuantity,
+      };
+    });
+  };
+
+  const handleAddToCart = async () => {
+    setIsAddingToCart(true);
+    setAddToCartError(null);
+
+    const cartItems = menu
+      .filter((item) => item.id !== null && quantities[item.id!] > 0)
+      .map((item) => ({
+        itemId: item.id!,
+        name: item.name,
+        price: item.price,
+        quantity: quantities[item.id!],
+        image: item.image, // Assuming MenuItem has an image property
+        restaurantId: restaurant._id, // Add restaurantId to cart item
+      }));
+
+    if (cartItems.length === 0) {
+      setAddToCartError("Please select items to add to the cart.");
+      setIsAddingToCart(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ items: cartItems }),
+      });
+
+      if (!response.ok) {
+        let errorResponseMessage = `Failed to add items to cart (Status: ${response.status}).`;
+        let serverErrorDetails = "";
+        // Clone the response to be able to read it multiple times
+        const clonedResponse = response.clone();
+
+        try {
+          // Try to parse as JSON first from the cloned response
+          const errorData = await clonedResponse.json();
+          serverErrorDetails = errorData.message || JSON.stringify(errorData);
+          errorResponseMessage = `Server error: ${serverErrorDetails}`;
+        } catch (e) {
+          // If response.json() fails, the response was not JSON (likely HTML for a 500 error)
+          // Use the original response for .text() as clone might have issues if first read failed weirdly,
+          // or stick to clonedResponse.text() - for safety, let's use the original response.text() here
+          // as the primary goal of clone was to allow json() then text(). If json() failed, original response is still pristine.
+          const textResponse = await response.text(); // Read from the original response
+          console.error(
+            "Raw server error response (not JSON):\n",
+            textResponse
+          );
+          serverErrorDetails = `Response was not JSON. Raw response snippet: ${textResponse.substring(
+            0,
+            500
+          )}...`;
+          // Update the message to indicate an unexpected server response
+          errorResponseMessage = `Failed to add items to cart (Status: ${response.status}). The server returned an unexpected response. Check console for details.`;
+        }
+        console.error(
+          `[handleAddToCart] Server error details logged: ${serverErrorDetails}`
+        );
+        throw new Error(errorResponseMessage); // This error will be caught by the outer catch
+      }
+
+      // If response is OK
+      router.push("/cart"); // Navigate to cart page
+    } catch (error) {
+      // This outer catch will now receive the potentially more detailed error message
+      console.error("Error in handleAddToCart process:", error);
+      setAddToCartError(
+        error instanceof Error
+          ? error.message
+          : "An unknown error occurred during the add to cart process."
+      );
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   if (isLoadingMenu) {
@@ -217,6 +309,23 @@ export default function RestaurantClientPage({
               </Card>
             ))}
           </div>
+          {menu.length > 0 && (
+            <div className="mt-8 flex flex-col items-center">
+              <Button
+                onClick={handleAddToCart}
+                disabled={
+                  isAddingToCart || Object.keys(quantities).length === 0
+                }
+                size="lg"
+                className="w-full md:w-auto"
+              >
+                {isAddingToCart ? "Adding..." : "Add to Cart"}
+              </Button>
+              {addToCartError && (
+                <p className="text-red-500 text-sm mt-2">{addToCartError}</p>
+              )}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="info">
