@@ -24,6 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { MapPin, CreditCard, Wallet } from "lucide-react";
+import { type CartItem } from "@/lib/session"; // Import CartItem type
 
 interface DeliveryData {
   firstName: string;
@@ -34,10 +35,20 @@ interface DeliveryData {
   phone: string;
 }
 
+interface CartData {
+  items: CartItem[];
+  subtotal: number;
+  deliveryFee: number;
+  total: number;
+  restaurantId?: string;
+  restaurantName?: string;
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [paymentMethod, setPaymentMethod] = useState("card");
+  const [cartData, setCartData] = useState<CartData | null>(null);
   const [deliveryData, setDeliveryData] = useState<DeliveryData>({
     firstName: "",
     lastName: "",
@@ -61,7 +72,64 @@ export default function CheckoutPage() {
     script.src = "https://www.payhere.lk/lib/payhere.js";
     script.type = "text/javascript";
     document.body.appendChild(script);
-  }, []);
+
+    // Fetch cart data
+    const fetchCartData = async () => {
+      try {
+        const apiResponse = await axios.get("/api/cart");
+        console.log("Fetched cart data from API:", apiResponse.data); // Log API response
+        const data = apiResponse.data;
+
+        if (
+          data &&
+          Array.isArray(data.cart) && // Check if 'cart' is an array
+          typeof data.subtotal === "number" &&
+          typeof data.deliveryFee === "number" &&
+          typeof data.total === "number"
+        ) {
+          setCartData({
+            items: data.cart, // Map 'cart' from API to 'items' for local state
+            subtotal: data.subtotal,
+            deliveryFee: data.deliveryFee,
+            total: data.total,
+            restaurantId: data.restaurantId,
+            restaurantName: data.restaurantName,
+          });
+        } else {
+          console.error(
+            "Fetched cart data is not in the expected format or missing required fields:",
+            data
+          );
+          toast({
+            title: "Error processing cart data",
+            description:
+              "Cart data from server is incomplete or malformed. Expected 'cart' array and numeric totals.",
+            variant: "destructive",
+          });
+          // Set to a default empty/error state
+          setCartData({
+            items: [],
+            subtotal: 0,
+            deliveryFee: 0,
+            total: 0,
+            restaurantId: undefined,
+            restaurantName: undefined,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching cart data:", error);
+        toast({
+          title: "Error fetching cart data.",
+          description: "Could not load your cart. Please try again.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchCartData();
+  }, []); // Changed dependency array to []
+
+  console.log("Current cartData state:", cartData); // Log current cartData state
 
   const handleSubmit = async (e: React.FormEvent) => {
     console.log("Submit button clicked");
@@ -84,6 +152,15 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!cartData || cartData.items.length === 0) {
+      toast({
+        title: "Your cart is empty.",
+        description: "Please add items to your cart before proceeding.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       // Generate a random order ID
       const randomOrderId = `FDA_${Math.floor(Math.random() * 1e6)
@@ -91,7 +168,7 @@ export default function CheckoutPage() {
         .padStart(6, "0")}`;
 
       const req = {
-        amount: 1000,
+        amount: cartData.total, // Use actual total from cart
         fname: deliveryData.firstName,
         lname: deliveryData.lastName,
         email: "kanch.prabath@gmail.com",
@@ -224,25 +301,59 @@ export default function CheckoutPage() {
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span>LKR 2800.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Delivery Fee</span>
-                  <span>LKR 120.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tax</span>
-                  <span>LKR 140.00</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between font-semibold">
-                  <span>Total</span>
-                  <span>LKR 3060.00</span>
-                </div>
-              </div>
+              {(() => {
+                console.log("Rendering CardContent. cartData:", cartData);
+                if (cartData) {
+                  console.log(
+                    "cartData.subtotal:",
+                    cartData.subtotal,
+                    "typeof:",
+                    typeof cartData.subtotal
+                  );
+                  console.log(
+                    "cartData.deliveryFee:",
+                    cartData.deliveryFee,
+                    "typeof:",
+                    typeof cartData.deliveryFee
+                  );
+                  console.log(
+                    "cartData.total:",
+                    cartData.total,
+                    "typeof:",
+                    typeof cartData.total
+                  );
+                }
+                const conditionMet =
+                  cartData &&
+                  typeof cartData.subtotal === "number" &&
+                  typeof cartData.deliveryFee === "number" &&
+                  typeof cartData.total === "number";
+                console.log("Condition for showing summary met:", conditionMet);
+
+                if (conditionMet) {
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Subtotal</span>
+                        <span>LKR {cartData.subtotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          Delivery Fee
+                        </span>
+                        <span>LKR {cartData.deliveryFee.toFixed(2)}</span>
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between font-semibold">
+                        <span>Total</span>
+                        <span>LKR {cartData.total.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  );
+                } else {
+                  return <p>Loading cart summary...</p>;
+                }
+              })()}
             </CardContent>
             <CardFooter>
               <Button

@@ -111,11 +111,37 @@ export async function GET(request: NextRequest) {
       sessionOptions
     );
 
-    if (!session.cart) {
-      return NextResponse.json({ cart: [] }, { status: 200 });
+    const cartItems = session.cart || [];
+    let subtotal = 0;
+    let restaurantId = undefined;
+    let restaurantName = undefined; // You might need to fetch/store this
+
+    if (cartItems.length > 0) {
+      restaurantId = cartItems[0].restaurantId;
+      // Assuming restaurantName might be stored or could be fetched based on ID
+      // For now, let's leave it undefined or you can add logic to retrieve it.
+      // restaurantName = cartItems[0].restaurantName;
+
+      subtotal = cartItems.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+      );
     }
 
-    return NextResponse.json({ cart: session.cart }, { status: 200 });
+    const deliveryFee = cartItems.length > 0 ? 120 : 0; // Example delivery fee
+    const total = subtotal + deliveryFee;
+
+    return NextResponse.json(
+      {
+        cart: cartItems,
+        subtotal,
+        deliveryFee,
+        total,
+        restaurantId, // Include restaurantId
+        restaurantName, // Include restaurantName (if available)
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("[API/CART GET] Error:", error);
     const errorMessage =
