@@ -10,10 +10,11 @@ import { useToast } from "@/hooks/use-toast";
 import { User, Settings, CreditCard, MapPin, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-
+import { useAuth } from "@/context/AuthContext";
 export default function ProfilePage() {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const { user } = useAuth();
 
   const handleSave = () => {
     setIsEditing(false);
@@ -69,7 +70,9 @@ export default function ProfilePage() {
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
                       id="firstName"
-                      defaultValue="Ishara"
+                      defaultValue={
+                        user?.name ? user.name.split(" ")[0] : "User First Name"
+                      }
                       disabled={!isEditing}
                     />
                   </div>
@@ -77,7 +80,9 @@ export default function ProfilePage() {
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       id="lastName"
-                      defaultValue="Sandanayake"
+                      defaultValue={
+                        user?.name ? user.name.split(" ")[1] : "User Last Name"
+                      }
                       disabled={!isEditing}
                     />
                   </div>
@@ -87,7 +92,7 @@ export default function ProfilePage() {
                   <Input
                     id="email"
                     type="email"
-                    defaultValue="isara@gmail.com"
+                    defaultValue={user?.email || "user@mail.com"}
                     disabled={!isEditing}
                   />
                 </div>
@@ -95,7 +100,7 @@ export default function ProfilePage() {
                   <Label htmlFor="phone">Phone Number</Label>
                   <Input
                     id="phone"
-                    defaultValue="+94 77 123 4567"
+                    defaultValue={user?.phone || "+94 123 456 789"}
                     disabled={!isEditing}
                   />
                 </div>
