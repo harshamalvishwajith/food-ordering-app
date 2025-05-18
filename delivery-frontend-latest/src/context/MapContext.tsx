@@ -78,7 +78,7 @@ export const MapProvider: React.FC<{ children: ReactNode }> = ({
       setLoading(true);
       setError(null);
       // Fetch the delivery details from the backend
-      const response = await fetch(`http://localhost:3000/deliveries/${id}`);
+      const response = await fetch(`http://localhost:3002/deliveries/${id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch delivery details");
       }
@@ -108,7 +108,7 @@ export const MapProvider: React.FC<{ children: ReactNode }> = ({
       setLoading(true);
       setError(null);
       // Send a POST request to get the route data from the backend
-      const response = await fetch("http://localhost:3001/navigate", {
+      const response = await fetch("http://localhost:3002/navigate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
